@@ -92,7 +92,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; background: #
 
 <div class="form-wrap" id="main-form">
 
-  <div id="error-toast" class="toast error"><i class="ti ti-alert-circle"></i><span id="error-msg-text"></span></div>
+  <div id="error-toast" class="toast error" style="display:none;"><i class="ti ti-alert-circle"></i><span id="error-msg-text"></span></div>
 
   <div class="section-card">
     <div class="section-title"><i class="ti ti-building"></i> פרטי העסק</div>
@@ -220,7 +220,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; background: #
 </div>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfPwt3qvoyk88cmGguHp_ZQqGMsbYty1XUqIcSMGlFOAfcPSD7RzVHPR-8498uyFLJLg/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNtVdsSMbmBhZL2h5oFyFScexrbs_Nqsx_pnGbC_UGhVh1pZJw855nx7TDlxPfYxu-0w/exec";
 
 let drawing = false, tool = 'pen', color = '#1a1a2e', brushSize = 2;
 let lastX = 0, lastY = 0, snapStart = null;
@@ -312,17 +312,16 @@ async function submitForm() {
   document.getElementById('submit-label').textContent = 'שולח...';
 
   try {
-    const res = await fetch(APPS_SCRIPT_URL, {
+    await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     });
-    const json = await res.json();
-    if (json.status === 'ok') {
-      document.getElementById('main-form').style.display = 'none';
-      document.getElementById('success-msg').style.display = 'block';
-    } else {
-      throw new Error(json.message || 'שגיאה לא ידועה');
-    }
+    // no-cors לא מחזיר תגובה – אחרי 1 שניה מניחים שהצליח
+    await new Promise(r => setTimeout(r, 1000));
+    document.getElementById('main-form').style.display = 'none';
+    document.getElementById('success-msg').style.display = 'block';
   } catch (err) {
     showError('שגיאה בשליחה: ' + err.message + '. נסה שוב.');
   } finally {
