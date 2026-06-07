@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>טופס הזמנה – מ.מ מתכות</title>
+<title>הזמנת עבודה – מ.מ מתכות</title>
 <link rel="icon" type="image/x-icon" href="https://maimonmetal.github.io/mm-metals-form/favicon.ico" />
 <link rel="icon" type="image/png" href="https://maimonmetal.github.io/mm-metals-form/favicon.png" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
@@ -11,7 +11,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; background: #f4f6f9; min-height: 100vh; }
 .header { background: #1a1a2e; padding: 28px 40px 20px; display: flex; align-items: center; gap: 20px; border-bottom: 3px solid #2196b6; }
-.header-title h1 { color: #fff; font-size: 22px; font-weight: 700; }
+.header-title h1 { color: #fff; font-size: 20px; font-weight: 700; }
 .header-title p { color: #a0b4c8; font-size: 13px; margin-top: 3px; }
 .logo-svg { width: 70px; height: 55px; }
 .form-wrap { max-width: 820px; margin: 32px auto; padding: 0 16px 40px; }
@@ -31,6 +31,11 @@ body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; background: #
 .radio-opt input[type=radio] { accent-color: #2196b6; width: 16px; height: 16px; margin: 0; }
 .radio-opt.selected { border-color: #2196b6; background: rgba(33,150,182,0.08); }
 .radio-opt span { font-size: 14px; color: #1a1a2e; }
+.client-type-bar { display: flex; gap: 0; margin-bottom: 0; border-radius: 8px; overflow: hidden; border: 1.5px solid #c8d4e0; }
+.client-type-btn { flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: 500; cursor: pointer; background: #f8fafc; color: #555e6b; border: none; font-family: inherit; transition: all 0.15s; }
+.client-type-btn.active { background: #2196b6; color: #fff; }
+.client-type-btn:first-child { border-left: 1px solid #c8d4e0; }
+.optional-tag { font-size: 11px; color: #9aabb8; font-weight: 400; margin-right: 4px; }
 .upload-area { border: 2px dashed #b0c0d0; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.15s; background: #f8fafc; position: relative; }
 .upload-area:hover { border-color: #2196b6; background: rgba(33,150,182,0.04); }
 .upload-area i { font-size: 28px; color: #2196b6; display: block; margin-bottom: 8px; }
@@ -56,9 +61,8 @@ body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; background: #
 .submit-btn:disabled { background: #7ab8cc; cursor: not-allowed; }
 .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.toast { display: none; padding: 14px 20px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; font-weight: 500; align-items: center; gap: 10px; }
+.toast { padding: 14px 20px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; font-weight: 500; align-items: center; gap: 10px; }
 .toast.error { display: flex; background: #fdf0f0; border: 1.5px solid #f0a0a0; color: #a32d2d; }
-.toast.success { display: flex; background: #f0faf5; border: 1.5px solid #5DCAA5; color: #085041; }
 #success-msg { display: none; }
 #success-msg .section-card { text-align: center; padding: 40px; }
 #success-msg .big { font-size: 52px; color: #2196b6; display: block; margin-bottom: 16px; }
@@ -87,7 +91,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; background: #
     <text x="40" y="58" font-family="Arial" font-size="7" fill="#8a9098">בע"מ</text>
   </svg>
   <div class="header-title">
-    <h1>הזמנת עבודה</h1>
+    <h1>הזמנת עבודה / בקשה להצעת מחיר</h1>
     <p>מ.מ מתכות – סחר ועיבוד בפלדה בטכנולוגיה מתקדמת</p>
   </div>
 </div>
@@ -96,6 +100,17 @@ body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; background: #
 
   <div id="error-toast" class="toast error" style="display:none;"><i class="ti ti-alert-circle"></i><span id="error-msg-text"></span></div>
 
+  <!-- סוג לקוח -->
+  <div class="section-card">
+    <div class="section-title"><i class="ti ti-users"></i> סוג לקוח</div>
+    <div class="client-type-bar">
+      <button class="client-type-btn active" id="btn-new" onclick="setClientType('new')">לקוח חדש</button>
+      <button class="client-type-btn" id="btn-existing" onclick="setClientType('existing')">לקוח קיים</button>
+    </div>
+    <input type="hidden" id="client-type" value="new" />
+  </div>
+
+  <!-- פרטי העסק -->
   <div class="section-card">
     <div class="section-title"><i class="ti ti-building"></i> פרטי העסק</div>
     <div class="field-grid grid-2">
@@ -108,7 +123,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; background: #
         <input type="text" id="biz-hp" placeholder="מספר ח.פ" />
       </div>
       <div class="field" style="grid-column:1/-1;">
-        <label>כתובת העסק <span class="req">*</span></label>
+        <label id="biz-address-label">כתובת העסק <span class="req" id="biz-address-req">*</span><span class="optional-tag" id="biz-address-opt" style="display:none;">(לא חובה)</span></label>
         <input type="text" id="biz-address" placeholder="רחוב, מספר, עיר" />
       </div>
       <div class="field">
@@ -122,20 +137,22 @@ body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; background: #
     </div>
   </div>
 
+  <!-- איש קשר -->
   <div class="section-card">
     <div class="section-title"><i class="ti ti-user"></i> איש קשר</div>
     <div class="field-grid grid-2">
       <div class="field">
-        <label>שם איש קשר <span class="req">*</span></label>
+        <label>שם איש קשר <span class="req" id="contact-person-req">*</span><span class="optional-tag" id="contact-person-opt" style="display:none;">(לא חובה)</span></label>
         <input type="text" id="contact-person" placeholder="שם מלא" />
       </div>
       <div class="field">
-        <label>טלפון איש קשר <span class="req">*</span></label>
+        <label>טלפון איש קשר <span class="req" id="contact-phone-req">*</span><span class="optional-tag" id="contact-phone-opt" style="display:none;">(לא חובה)</span></label>
         <input type="tel" id="contact-phone" placeholder="05X-XXXXXXX" dir="ltr" />
       </div>
     </div>
   </div>
 
+  <!-- פרטי הזמנה -->
   <div class="section-card">
     <div class="section-title"><i class="ti ti-clipboard-list"></i> פרטי ההזמנה</div>
     <div class="field-grid">
@@ -163,13 +180,14 @@ body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; background: #
     </div>
   </div>
 
+  <!-- העלאת קובץ -->
   <div class="section-card">
-    <div class="section-title"><i class="ti ti-photo"></i> העלאת תמונה / קובץ</div>
+    <div class="section-title"><i class="ti ti-photo"></i> העלאת תמונה / קובץ / שרטוט</div>
     <div class="upload-area">
       <i class="ti ti-cloud-upload"></i>
       <p>לחץ כדי לבחור קובץ או גרור לכאן</p>
-      <p style="font-size:11px;margin-top:4px;">JPG, PNG, PDF עד 10MB</p>
-      <input type="file" id="file-input" accept="image/*,.pdf" onchange="handleFile(this)" />
+      <p style="font-size:11px;margin-top:4px;">JPG, PNG, PDF, DWG עד 10MB</p>
+      <input type="file" id="file-input" accept="image/*,.pdf,.dwg,.dxf" onchange="handleFile(this)" />
     </div>
     <div class="upload-preview" id="upload-preview">
       <i class="ti ti-file-check" style="color:#2196b6;font-size:18px;"></i>
@@ -178,6 +196,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; background: #
     </div>
   </div>
 
+  <!-- ציור -->
   <div class="section-card">
     <div class="section-title"><i class="ti ti-pencil"></i> ציור / סקיצה</div>
     <p style="font-size:13px;color:#7a8898;margin-bottom:12px;">ניתן לצייר סקיצה, לסמן מידות, או לרשום הערות חזותיות</p>
@@ -227,9 +246,31 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNtVdsSMbmBhZL
 let drawing = false, tool = 'pen', color = '#1a1a2e', brushSize = 2;
 let lastX = 0, lastY = 0, snapStart = null;
 let uploadedFileData = null, uploadedFileName = null;
+let clientType = 'new';
 const canvas = document.getElementById('draw-canvas');
 const ctx = canvas.getContext('2d');
 
+// ---- סוג לקוח ----
+function setClientType(type) {
+  clientType = type;
+  document.getElementById('client-type').value = type;
+  document.getElementById('btn-new').classList.toggle('active', type === 'new');
+  document.getElementById('btn-existing').classList.toggle('active', type === 'existing');
+
+  const isExisting = type === 'existing';
+
+  // כתובת
+  document.getElementById('biz-address-req').style.display  = isExisting ? 'none'   : 'inline';
+  document.getElementById('biz-address-opt').style.display  = isExisting ? 'inline' : 'none';
+
+  // איש קשר
+  document.getElementById('contact-person-req').style.display = isExisting ? 'none'   : 'inline';
+  document.getElementById('contact-person-opt').style.display = isExisting ? 'inline' : 'none';
+  document.getElementById('contact-phone-req').style.display  = isExisting ? 'none'   : 'inline';
+  document.getElementById('contact-phone-opt').style.display  = isExisting ? 'inline' : 'none';
+}
+
+// ---- Canvas ----
 function resizeCanvas() {
   const w = canvas.parentElement.clientWidth;
   if (w > 0) { const img = ctx.getImageData(0,0,canvas.width,canvas.height); canvas.width=w; canvas.height=220; ctx.putImageData(img,0,0); }
@@ -265,20 +306,28 @@ function clearFile(){document.getElementById('file-input').value='';document.get
 
 function showError(msg){const t=document.getElementById('error-toast');t.style.display='flex';document.getElementById('error-msg-text').textContent=msg;t.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function hideError(){document.getElementById('error-toast').style.display='none';}
-
 function isCanvasEmpty(){const d=ctx.getImageData(0,0,canvas.width,canvas.height).data;for(let i=3;i<d.length;i+=4){if(d[i]>0)return false;}return true;}
 
 async function submitForm() {
   hideError();
-  const required = [
-    {id:'biz-name', label:'שם העסק'},
-    {id:'biz-hp', label:'ח.פ'},
-    {id:'biz-address', label:'כתובת'},
-    {id:'biz-phone', label:'טלפון העסק'},
-    {id:'contact-person', label:'שם איש קשר'},
-    {id:'contact-phone', label:'טלפון איש קשר'},
+  const isExisting = clientType === 'existing';
+
+  // שדות חובה תמיד
+  const alwaysRequired = [
+    {id:'biz-name',   label:'שם העסק'},
+    {id:'biz-hp',     label:'ח.פ'},
+    {id:'biz-phone',  label:'טלפון העסק'},
     {id:'order-date', label:'תאריך הזמנה'},
   ];
+  // שדות חובה רק ללקוח חדש
+  const newOnly = [
+    {id:'biz-address',    label:'כתובת העסק'},
+    {id:'contact-person', label:'שם איש קשר'},
+    {id:'contact-phone',  label:'טלפון איש קשר'},
+  ];
+
+  const required = isExisting ? alwaysRequired : [...alwaysRequired, ...newOnly];
+
   for (const f of required) {
     const el = document.getElementById(f.id);
     if (!el.value.trim()) {
@@ -289,8 +338,8 @@ async function submitForm() {
   const delivery = document.querySelector('input[name=delivery]:checked');
   if (!delivery) { showError('נא לבחור משלוח או איסוף עצמי'); return; }
 
-  // הכנת נתונים
   const payload = {
+    clientType:    clientType === 'new' ? 'לקוח חדש' : 'לקוח קיים',
     bizName:       document.getElementById('biz-name').value.trim(),
     bizHp:         document.getElementById('biz-hp').value.trim(),
     bizAddress:    document.getElementById('biz-address').value.trim(),
@@ -306,7 +355,6 @@ async function submitForm() {
     drawingData:   isCanvasEmpty() ? null : canvas.toDataURL('image/png'),
   };
 
-  // הצג spinner
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
   document.getElementById('spinner').style.display = 'block';
@@ -320,7 +368,6 @@ async function submitForm() {
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     });
-    // no-cors לא מחזיר תגובה – אחרי 1 שניה מניחים שהצליח
     await new Promise(r => setTimeout(r, 1000));
     document.getElementById('main-form').style.display = 'none';
     document.getElementById('success-msg').style.display = 'block';
@@ -338,6 +385,7 @@ function resetForm() {
   document.getElementById('main-form').style.display = 'block';
   document.getElementById('success-msg').style.display = 'none';
   clearCanvas(); clearFile(); hideError();
+  setClientType('new');
 }
 
 document.getElementById('order-date').value = new Date().toISOString().split('T')[0];
